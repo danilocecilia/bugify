@@ -9,10 +9,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0].url?.startsWith('chrome://')) return undefined
 
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        files: ['content.js'],
-      })
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: tabs[0].id },
+          files: ['content.js'],
+        },
+        () => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'startSelection' })
+        }
+      )
     })
   } else if (request.action === 'captureSelectedArea') {
     const { left, top, width, height } = request.area

@@ -1,5 +1,16 @@
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'startSelection') {
+    activateSelection()
+  }
+})
+
 function activateSelection() {
+  // Remove any existing overlay to prevent darkening on repeated captures
+  let existingOverlay = document.getElementById('selection-overlay')
+  if (existingOverlay) existingOverlay.remove()
+
   const overlay = document.createElement('div')
+  overlay.id = 'selection-overlay'
   overlay.style.position = 'fixed'
   overlay.style.top = '0'
   overlay.style.left = '0'
@@ -17,13 +28,13 @@ function activateSelection() {
     startX = e.clientX
     startY = e.clientY
 
-    // If a selectionBox already exists, remove it
+    // Remove the existing selection box if there is one
     if (selectionBox) selectionBox.remove()
 
     selectionBox = document.createElement('div')
     selectionBox.style.position = 'absolute'
     selectionBox.style.border = '2px dashed #fff'
-    selectionBox.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
+    // selectionBox.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
     selectionBox.style.left = `${startX}px`
     selectionBox.style.top = `${startY}px`
     overlay.appendChild(selectionBox)
@@ -44,7 +55,6 @@ function activateSelection() {
   function endSelection() {
     document.removeEventListener('mousemove', resizeSelectionBox)
     document.removeEventListener('mouseup', endSelection)
-    overlay.remove()
 
     const pixelRatio = window.devicePixelRatio || 1
     const scrollX = window.scrollX
@@ -57,14 +67,29 @@ function activateSelection() {
       height: Math.abs(endY - startY) * pixelRatio,
     }
 
-    captureSelectedArea(captureArea)
+    // Remove the overlay completely before capturing the screenshot
+    overlay.remove()
+
+    // Try to capture the selected area and handle any extension context issues
+    try {
+      captureSelectedArea(captureArea, () => {
+        // Optionally, you can re-add the overlay or perform other actions here if needed
+      })
+    } catch (error) {
+      console.error('Error capturing area:', error)
+    }
   }
 
   overlay.addEventListener('mousedown', startSelection)
 }
 
-function captureSelectedArea(area) {
-  chrome.runtime.sendMessage({ action: 'captureSelectedArea', area })
+function captureSelectedArea(area, callback) {
+  try {
+    chrome.runtime.sendMessage(
+      { action: 'captureSelectedArea', area },
+      callback
+    )
+  } catch (error) {
+    console.error('Error sending message to background script:', error)
+  }
 }
-
-activateSelection()

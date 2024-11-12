@@ -13,9 +13,12 @@ function activateSelection() {
   let startX, startY, endX, endY
   let selectionBox = null
 
-  overlay.addEventListener('mousedown', (e) => {
+  function startSelection(e) {
     startX = e.clientX
     startY = e.clientY
+
+    // If a selectionBox already exists, remove it
+    if (selectionBox) selectionBox.remove()
 
     selectionBox = document.createElement('div')
     selectionBox.style.position = 'absolute'
@@ -25,8 +28,9 @@ function activateSelection() {
     selectionBox.style.top = `${startY}px`
     overlay.appendChild(selectionBox)
 
-    overlay.addEventListener('mousemove', resizeSelectionBox)
-  })
+    document.addEventListener('mousemove', resizeSelectionBox)
+    document.addEventListener('mouseup', endSelection)
+  }
 
   function resizeSelectionBox(e) {
     endX = e.clientX
@@ -37,18 +41,26 @@ function activateSelection() {
     selectionBox.style.top = `${Math.min(startY, endY)}px`
   }
 
-  overlay.addEventListener('mouseup', () => {
-    overlay.removeEventListener('mousemove', resizeSelectionBox)
+  function endSelection() {
+    document.removeEventListener('mousemove', resizeSelectionBox)
+    document.removeEventListener('mouseup', endSelection)
     overlay.remove()
 
+    const pixelRatio = window.devicePixelRatio || 1
+    const scrollX = window.scrollX
+    const scrollY = window.scrollY
+
     const captureArea = {
-      left: Math.min(startX, endX),
-      top: Math.min(startY, endY),
-      width: Math.abs(endX - startX),
-      height: Math.abs(endY - startY),
+      left: (Math.min(startX, endX) + scrollX) * pixelRatio,
+      top: (Math.min(startY, endY) + scrollY) * pixelRatio,
+      width: Math.abs(endX - startX) * pixelRatio,
+      height: Math.abs(endY - startY) * pixelRatio,
     }
+
     captureSelectedArea(captureArea)
-  })
+  }
+
+  overlay.addEventListener('mousedown', startSelection)
 }
 
 function captureSelectedArea(area) {

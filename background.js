@@ -7,8 +7,6 @@ chrome.action.onClicked.addListener(() => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'initCapture') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      console.log('🚀 ~ chrome.tabs.query ~ tabs:', tabs)
-      console.log('🚀 ~ chrome.tabs.query ~ sender:', sender)
       if (tabs[0].url?.startsWith('chrome://')) return undefined
 
       chrome.scripting.executeScript({
@@ -43,25 +41,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 function createCroppedImage(dataUrl, left, top, width, height, callback) {
-  const img = new OffscreenCanvas(1, 1)
-  const context = img.getContext('2d')
+  // Ensure width and height are valid before proceeding
+  if (width <= 0 || height <= 0) {
+    return
+  }
+
   fetch(dataUrl)
     .then((response) => response.blob())
-    .then((blob) => {
-      const imageBitmap = createImageBitmap(blob)
-      return imageBitmap
-    })
+    .then((blob) => createImageBitmap(blob))
     .then((imageBitmap) => {
       const canvas = new OffscreenCanvas(width, height)
       const ctx = canvas.getContext('2d')
+      // Draw the cropped image on the OffscreenCanvas
       ctx.drawImage(imageBitmap, left, top, width, height, 0, 0, width, height)
-      canvas.convertToBlob().then((blob) => {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          callback(reader.result)
-        }
-        reader.readAsDataURL(blob)
-      })
+
+      // Convert canvas to blob if width and height are valid
+      return canvas.convertToBlob()
+    })
+    .then((blob) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        callback(reader.result)
+      }
+      reader.readAsDataURL(blob)
     })
     .catch((error) => {
       console.error('Error creating cropped image:', error)

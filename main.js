@@ -1,16 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search)
   const imageUrl = urlParams.get('image')
-  const capturedImage = document.getElementById('captured-image')
   const drawingCanvas = document.getElementById('drawing-canvas')
-  const ctx = drawingCanvas.getContext('2d')
   const activateDrawingButton = document.getElementById('activate-drawing')
   const activateArrowButton = document.getElementById('activate-arrow')
   const activateTextButton = document.getElementById('activate-text')
   const undoButton = document.getElementById('undo')
   const generateJiraButton = document.getElementById('generate-jira')
   const copyImageBtn = document.getElementById('copyImageBtn')
-  const colorPicker = document.getElementById('color-picker')
+  const openJiraButton = document.getElementById('openJiraButton')
 
   // Modal elements
   const jiraModal = document.getElementById('jiraModal')
@@ -93,5 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
       deactivateText()
       jiraModal.style.display = 'none'
     }
+  })
+
+  openJiraButton.addEventListener('click', (event) => {
+    event.preventDefault()
+    chrome.tabs.create({
+      url: 'https://jira.aws.na.nissancloud.biz/secure/RapidBoard.jspa?rapidView=1948&projectKey=AP16134&view=planning.nodetail&issueLimit=100',
+    })
   })
 })

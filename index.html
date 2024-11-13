@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Captured Screenshot</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="controls">
+      <h1>Captured Screenshot</h1>
+      <button id="activate-drawing">Activate Drawing</button>
+      <button id="activate-arrow">Draw Arrow</button>
+      <button id="activate-text">Add Text</button>
+      <button id="undo">Undo</button>
+      <input type="color" id="color-picker" value="#ff0000" />
+      <button id="generate-jira">Generate Jira Markup</button>
+      <button id="copyImageBtn">Copy Image</button>
+    </div>
+    <div id="canvas-container">
+      <img id="captured-image" src="" alt="Captured Screenshot" />
+      <canvas id="drawing-canvas"></canvas>
+    </div>
+    <div id="jira-markup"></div>
+
+    <!-- The Modal -->
+    <div id="jiraModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <pre id="modal-jira-markup"></pre>
+        <button id="copyMarkupBtn">Copy Markup</button>
+      </div>
+    </div>
+
+    <script src="canvas.js"></script>
+    <script src="modal.js"></script>
+    <script src="jira.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

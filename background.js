@@ -34,9 +34,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         height,
         (croppedDataUrl) => {
           chrome.storage.local.set({ capturedImage: croppedDataUrl }, () => {
-            const capturedScreenUrl = chrome.runtime.getURL(
-              'capturedScreen.html'
-            )
+            const capturedScreenUrl = chrome.runtime.getURL('index.html')
             chrome.tabs.create({ url: capturedScreenUrl })
           })
         }

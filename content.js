@@ -5,7 +5,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 function activateSelection() {
-  // Remove any existing overlay to prevent darkening on repeated captures
   let existingOverlay = document.getElementById('selection-overlay')
   if (existingOverlay) existingOverlay.remove()
 
@@ -16,7 +15,6 @@ function activateSelection() {
   overlay.style.left = '0'
   overlay.style.width = '100vw'
   overlay.style.height = '100vh'
-  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'
   overlay.style.cursor = 'crosshair'
   overlay.style.zIndex = '9999'
   document.body.appendChild(overlay)
@@ -28,13 +26,12 @@ function activateSelection() {
     startX = e.clientX
     startY = e.clientY
 
-    // Remove the existing selection box if there is one
     if (selectionBox) selectionBox.remove()
 
     selectionBox = document.createElement('div')
     selectionBox.style.position = 'absolute'
     selectionBox.style.border = '2px dashed #fff'
-    // selectionBox.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
+    selectionBox.style.backgroundColor = 'rgba(0, 0, 0, 0.6)'
     selectionBox.style.left = `${startX}px`
     selectionBox.style.top = `${startY}px`
     overlay.appendChild(selectionBox)
@@ -57,24 +54,27 @@ function activateSelection() {
     document.removeEventListener('mouseup', endSelection)
 
     const pixelRatio = window.devicePixelRatio || 1
-    const scrollX = window.scrollX
-    const scrollY = window.scrollY
 
     const captureArea = {
-      left: (Math.min(startX, endX) + scrollX) * pixelRatio,
-      top: (Math.min(startY, endY) + scrollY) * pixelRatio,
+      left: Math.min(startX, endX) * pixelRatio,
+      top: Math.min(startY, endY) * pixelRatio,
       width: Math.abs(endX - startX) * pixelRatio,
       height: Math.abs(endY - startY) * pixelRatio,
     }
 
-    // Remove the overlay completely before capturing the screenshot
-    overlay.remove()
+    // Temporarily remove the overlay and selection box before capturing the screenshot
+    document.body.removeChild(overlay)
+    if (selectionBox) selectionBox.remove()
 
-    // Try to capture the selected area and handle any extension context issues
+    // Capture the selected area
     try {
-      captureSelectedArea(captureArea, () => {
-        // Optionally, you can re-add the overlay or perform other actions here if needed
-      })
+      setTimeout(() => {
+        captureSelectedArea(captureArea, () => {
+          // Ensure the overlay and selection box are removed after capturing the screenshot
+          if (overlay) overlay.remove()
+          if (selectionBox) selectionBox.remove()
+        })
+      }, 100) // Delay to ensure the overlay and selection box are removed
     } catch (error) {
       console.error('Error capturing area:', error)
     }

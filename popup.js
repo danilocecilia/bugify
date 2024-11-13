@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.set({ capturedImage: dataUrl }, () => {
           const capturedScreenUrl = chrome.runtime.getURL('capturedScreen.html')
           chrome.tabs.create({ url: capturedScreenUrl })
+          window.close()
         })
       })
     })
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Capture area button found')
     captureAreaButton.addEventListener('click', () => {
       console.log('Capture area button clicked')
-      chrome.runtime.sendMessage({ action: 'initCapture' })
+      chrome.runtime.sendMessage({ action: 'initCapture' }, window.close())
     })
   } else {
     console.error('Capture area button not found')
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Record button clicked')
       // Placeholder for video recording logic
       console.log('Start video recording...')
+      window.close()
     })
   } else {
     console.error('Record button not found')

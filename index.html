@@ -2,20 +2,23 @@
 <html>
   <head>
     <title>Captured Screenshot</title>
-    <script src="./tailwind.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="bg-gray-100 p-4">
-    <div id="controls" class="mb-4">
-      <h1 class="text-2xl font-bold mb-4">Captured Screenshot</h1>
+    <div id="controls" class="flex flex-col gap-4 justify-center text-center">
+      <h1 class="text-2xl font-bold">Captured Screenshot</h1>
 
-      <div>
+      <div class="flex items-center justify-center gap-4">
         <!-- Editing Tools Section -->
-        <div id="editing-tools" class="flex space-x-2 mb-4">
+        <div id="editing-tools" class="flex space-x-2 mb-4 bg-red-100">
           <button id="activate-drawing" class="btn">
             <i class="fas fa-pencil-alt"></i> Draw
           </button>
@@ -28,17 +31,13 @@
           <button id="undo" class="btn">
             <i class="fas fa-undo-alt"></i> Undo
           </button>
-          <input
-            type="color"
-            id="color-picker"
-            value="#ff0000"
-            title="Choose Color"
-            class="border rounded p-1"
-          />
+          <div class="container justify-center">
+            <input type="color" id="color-picker" value="#ff0000" />
+          </div>
         </div>
 
         <!-- Export/Sharing Section -->
-        <div id="export-tools" class="flex space-x-2">
+        <div id="export-tools" class="flex space-x-2 mb-4 bg-red-100">
           <button id="generate-jira" class="btn">
             <i class="fas fa-file-alt"></i> Generate JIRA Markup
           </button>
@@ -60,7 +59,7 @@
       />
       <canvas id="drawing-canvas" class="border"></canvas>
     </div>
-    <div id="jira-markup" class="mt-4 p-4 bg-white border rounded"></div>
+    <!-- <div id="jira-markup" class="mt-4 p-4 bg-white border rounded"></div> -->
 
     <!-- The Modal -->
     <div
@@ -73,43 +72,6 @@
         <button id="copyMarkupBtn" class="btn mt-4">Copy Markup</button>
       </div>
     </div>
-
-    <!-- Jira Issue Modal -->
-    <!-- <div
-      id="openJiraModal"
-      class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-    >
-      <div class="modal-content bg-white p-4 rounded shadow-lg">
-        <span class="close text-gray-500 cursor-pointer">&times;</span>
-        <h2 class="text-xl font-bold mb-4">Open Jira Issue</h2>
-        <form id="jiraForm" class="space-y-4">
-          <div>
-            <label for="issueTitle" class="block font-medium"
-              >Issue Title:</label
-            >
-            <input
-              type="text"
-              id="issueTitle"
-              name="issueTitle"
-              required
-              class="border rounded p-2 w-full"
-            />
-          </div>
-          <div>
-            <label for="issueDescription" class="block font-medium"
-              >Issue Description:</label
-            >
-            <textarea
-              id="issueDescription"
-              name="issueDescription"
-              required
-              class="border rounded p-2 w-full"
-            ></textarea>
-          </div>
-          <button type="submit" class="btn">Submit</button>
-        </form>
-      </div>
-    </div> -->
 
     <script src="canvas.js"></script>
     <script src="modal.js"></script>
